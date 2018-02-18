@@ -1,0 +1,19 @@
+<div [formGroup]="formGroup">
+  <div style="margin-left: 1em;">
+    <div class="form-group">
+      <app-csc-input [control]="formGroup.controls.street" [data]="{label: 'Street'}" [formError]="formErrors.street"></app-csc-input>
+    </div>
+    <div class="form-group">
+      <app-csc-input [control]="formGroup.controls.city" [data]="{label: 'City'}" [formError]="formErrors.city"></app-csc-input>
+    </div>
+    <div class="form-group">
+      <app-csc-enum [control]="formGroup.controls.state" [data]="{label: 'State', values: states}" [formError]="formErrors.state"></app-csc-enum>
+    </div>
+    <div class="form-group">
+      <app-csc-input [control]="formGroup.controls.zip" [data]="{label: 'Zip'}" [formError]="formErrors.zip"></app-csc-input>
+    </div>
+    <div class="form-group">
+      <app-csc-input [control]="formGroup.controls.other" [data]="{label: 'Other'}" [formError]="formErrors.other"></app-csc-input>
+    </div>
+  </div>
+</div>

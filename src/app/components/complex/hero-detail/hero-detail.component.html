@@ -1,0 +1,41 @@
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()" novalidate>
+  <div style="margin-bottom: 1em">
+    <button type="submit"
+            [disabled]="formGroup.pristine || !formGroup.valid" class="btn btn-success">Save</button> &nbsp;
+    <button type="reset" (click)="revert()"
+            [disabled]="formGroup.pristine" class="btn btn-danger">Revert</button>
+  </div>
+
+  <div class="form-group">
+    <app-csc-input  [control]="formGroup.controls.name"
+                    [data]="{label: 'Name'}"
+                    [formError]="formErrors.name">
+    </app-csc-input>
+  </div>
+  <div class="form-group">
+    <app-csc-date [control]="formGroup.controls.date"
+                  [data]="{label: 'Naissance', options: myDatePickerOptions}"
+                  [formError]="formErrors.date">
+    </app-csc-date>
+  </div>
+
+  <div formArrayName="secretLairs" class="well well-lg">
+    <div *ngFor="let address of secretLairs.controls; let i=index" [formGroupName]="i" >
+      <h4>Address #{{i + 1}}</h4>
+      <app-address [group]="address"></app-address>
+      <br>
+    </div>
+    <button (click)="addLair()" type="button">Add a Secret Lair</button>
+  </div>
+</form>
+
+<p>Form value: {{ formGroup.value | json }}</p>
+<p>Name value: {{ formGroup.get('name').value }}</p>
+<p>Name status: {{ formGroup.get('name').status }}</p>
+<p>Name pristine: {{ formGroup.get('name').pristine }}</p>
+<p>Name untouched: {{ formGroup.get('name').untouched }}</p>
+<!--<p>Street value: {{ heroForm.get('secretLairs[0].address.street').value}}</p>-->
+<p>Form status: {{ formGroup.status}}</p>
+<p>Form valid: {{ formGroup.valid}}</p>
+<p>Form pristine: {{ formGroup.pristine}}</p>
+<p>Form touched: {{ formGroup.touched}}</p>

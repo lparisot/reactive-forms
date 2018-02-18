@@ -1,0 +1,37 @@
+<h2>My Heroes</h2>
+
+<h3 *ngIf="isLoading"><i>Loading heroes ... </i></h3>
+<h3 *ngIf="!isLoading">Select a hero:</h3>
+
+<nav>
+  <button (click)="getHeroes()" class="btn btn-primary">Refresh</button>
+  <ul class="heroes">
+    <li *ngFor="let hero of heroes"
+      [class.selected]="hero === selectedHero"
+      (click)="onSelect(hero)">
+      <span class="badge">{{hero.id}}</span> {{hero.name}}
+    </li>
+  </ul>
+
+</nav>
+
+<div *ngIf="selectedHero">
+  <hr>
+  <h2>Hero Detail</h2>
+  <h3>Editing: {{selectedHero.name}}</h3>
+  <app-hero-detail [hero]="selectedHero"></app-hero-detail>
+</div>
+
+<!--
+<a *ngFor="let hero of heroes" (click)="onSelect(hero)">{{hero.name}}</a>
+
+<ul class="heroes">
+  <li *ngFor="let hero of heroes"
+    [class.selected]="hero === selectedHero"
+    (click)="onSelect(hero)">
+    <span class="badge">{{hero.id}}</span> {{hero.name}}
+  </li>
+</ul>
+
+<app-hero-detail [hero]="selectedHero"></app-hero-detail>
+-->

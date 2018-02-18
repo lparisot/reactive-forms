@@ -1,0 +1,7 @@
+<div class="form-group">
+  <app-csc-label [data]="{label: data.label, required: control && control.validator && control.validator('').required ? control.validator('').required : false}"></app-csc-label>
+  <input class="form-control" [formControl]="control">
+  <span [hidden]="!formError">
+    {{formError}}
+  </span>
+</div>
