@@ -57,13 +57,13 @@ export class HeroDetailComponent extends ValidationComponent implements OnInit, 
 
   // implements OnChanges
   ngOnChanges() {
-    if(this.formGroup) {
-      // You should reset the form when the hero changes so that control values from the previous hero are cleared and status flags are restored to the pristine state.
-      this.formGroup.reset({
-        name: this.hero.name,
-        date: ''
-      });
-      this.setAddresses(this.hero.addresses);
+    if(this.formGroup && this.hero) {
+        // You should reset the form when the hero changes so that control values from the previous hero are cleared and status flags are restored to the pristine state.
+        this.formGroup.reset({
+          name: this.hero.name,
+          date: ''
+        });
+        this.setAddresses(this.hero.addresses);
     }
   }
 

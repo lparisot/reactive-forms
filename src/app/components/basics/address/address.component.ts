@@ -1,7 +1,7 @@
-import { Component, OnInit, Input  } from '@angular/core';
+import { Component, OnInit, Input, OnChanges  } from '@angular/core';
 import { FormGroup, FormControl, FormArray, Validators  } from '@angular/forms';
 import { states, Address } from '../../../data-model';
-import { ValidationComponent } from '../../validation';
+import { ValidationComponent, CustomValidators, MyValidators, ageRangeValidator } from '../../validation';
 
 @Component({
   selector: 'app-address',
@@ -23,12 +23,13 @@ export class AddressComponent extends ValidationComponent implements OnInit {
   }
 
   static buildFormGroup(address: Address) {
+    console.log('address:'+JSON.stringify(address));
     return new FormGroup({
-      street: new FormControl(address.street, Validators.required),
+      street: new FormControl(address.street),
       city: new FormControl(address.city, Validators.required),
       state: new FormControl(address.state, Validators.required),
       zip: new FormControl(address.zip, [Validators.required, Validators.pattern('[0-9]{5}')]),
-      other: new FormControl(address.other)
+      other: new FormControl(address.other, [ValidationComponent.integer(), ValidationComponent.min(1)]) //CustomValidators.integer) //, ValidationComponent.min(10)
     })
   }
 
@@ -44,6 +45,7 @@ export class AddressComponent extends ValidationComponent implements OnInit {
   }
 
   // override ValidationComponent
+  /*
   buildMessages(): {} {
     return {
       'street': {
@@ -60,7 +62,11 @@ export class AddressComponent extends ValidationComponent implements OnInit {
         'pattern':       'Zip must be an integer of 5 characters'
       },
       'other': {
+        'integer':       'must be an integer',
+        'min':           'Other must be greater than 9',
+        'email':         'email'
       }
     }
   }
+  */
 }
