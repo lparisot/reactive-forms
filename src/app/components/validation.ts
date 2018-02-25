@@ -9,23 +9,21 @@ export abstract class ValidationComponent {
   formErrors = {};
   validationMessages = {};
 
-  constructor() {
-    this.formErrors = this.buildErrors();
-    this.validationMessages = this.buildMessages();
-  }
+  constructor() {}
 
   setFormGroup(formGroup: FormGroup) {
     this.formGroup = formGroup;
     this.formGroup
       .valueChanges
       .subscribe(data => this.onValueChanged(data));
+    this.formErrors = this.buildErrors();
+    this.validationMessages = this.buildMessages();
   }
 
   protected onValueChanged(data?: any) {
     if (!this.formGroup) { return; }
 
     this.validationMessages = this.buildMessages();
-    console.log('onValueChanged:'+JSON.stringify(this.validationMessages));
 
     const form = this.formGroup;
     for (const field in this.formErrors) {
@@ -41,6 +39,72 @@ export abstract class ValidationComponent {
     }
   }
 
+  buildErrors() {
+    let errors = {};
+    if (this.formGroup) {
+      Object.keys(this.formGroup.controls).forEach(key => {
+        errors[key] = '';
+      });
+    }
+    return errors;
+  }
+
+  getGenericMessages() {
+    return {
+      'required': 'Champs requis',
+      'min': 'La valeur doit être >= à',
+      'max': 'La valeur doit être <= à',
+      'maxlength': 'Longueur maximum',
+      'minlength': 'Longueur minimum',
+      'integer': 'Entrez un entier',
+      'email': 'Entrez un email valide',
+      'pattern': 'Invalide'
+    }
+  }
+  buildMessages() {
+    let messages = {};
+    if (this.formGroup) {
+      Object.keys(this.formGroup.controls).forEach(key => {
+        if (this.formGroup.controls[key].validator) {
+          let validators = this.formGroup.controls[key].validator(this.formGroup.controls[key]);
+          if (validators) {
+            let message = {};
+            Object.keys(validators).forEach(name => {
+              let value = this.getGenericMessages()[name];
+              let field = null;
+              switch(name) {
+                case 'min':
+                case 'max':
+                  field = 'attendue';
+                  break;
+                case 'maxlength':
+                case 'minlength':
+                  field = 'requiredLength';
+                  break;
+                case 'pattern':
+                  field = 'requiredPattern';
+              }
+              if (field) {
+                message[name] = value + ' ' + validators[name][field];
+              }
+              else {
+                message[name] = value;
+              }
+              message[name] += '.';
+            });
+            messages[key] = message;
+          }
+          else {
+            messages[key] = {};
+          }
+        }
+      });
+    }
+    return messages;
+  }
+}
+
+export class CustomValidators {
   protected static isEmptyInputValue(value: any): boolean {
     // we don't check for string here so it also works with arrays
     return (value == null) || (typeof value == 'undefined') || (value.length === 0);
@@ -92,121 +156,5 @@ export abstract class ValidationComponent {
       }
       return null;
     }
-  }
-
-  abstract buildErrors(): {};
-
-  //abstract buildMessages(): {};
-
-  getGenericMessages() {
-    return {
-      'required': 'Champs requis',
-      'min': 'La valeur doit être >= à',
-      'max': 'La valeur doit être <= à',
-      'maxlength': 'Longueur maximum',
-      'minlength': 'Longueur minimum',
-      'integer': 'Entrez un entier',
-      'email': 'Entrez un email valide',
-      'pattern': 'Invalide'
-    }
-  }
-  buildMessages() {
-    let messages = {};
-    if (this.formGroup) {
-      Object.keys(this.formGroup.controls).forEach(key => {
-        if (this.formGroup.controls[key].validator) {
-          let validators = this.formGroup.controls[key].validator(this.formGroup.controls[key]);
-          if (validators) {
-            let message = {};
-            Object.keys(validators).forEach(name => {
-              console.log('name:'+name);
-              let value = this.getGenericMessages()[name];
-              message[name] = validators[name].attendue ? value + ' ' + validators[name].attendue + '.' : value + '.';
-            });
-            messages[key] = message;
-          }
-          else {
-            messages[key] = {};
-          }
-        }
-      });
-    }
-    return messages;
-  }
-}
-
-export function isEmptyInputValue(value) {
-  // we don't check for string here so it also works with arrays
-  console.log('function isEmptyInputValue:'+value);
-  return value === null || value === undefined || value.length === 0;
-}
-
-export class CustomValidators implements Validator {
-
-  validate(c: FormControl): {[key: string]: any} | null {
-    return CustomValidators.integer(c);
-  }
-
-  static integer(control: FormControl): {[key: string]: any} | null {
-    console.log('integer');
-    return (control: AbstractControl): {[key: string]: any} | null => {
-      console.log('control:'+control);
-      if (isEmptyInputValue(control.value)) {
-       return null;  // don't validate empty values to allow optional controls
-      }
-      const value = parseFloat(control.value);
-      // Controls with NaN values after parsing should be treated as not having a
-      // minimum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-min
-      return !isNaN(value) ? {'integer': {'valid': false}} : null;
-    }
-  }
-}
-
-export function ageRangeValidator(control: AbstractControl): { [key: string]: boolean } | null {
-  console.log('function ageRangeValidator');
-
-  if (!control) {
-    console.log('function ageRangeValidator1');
-    return null;
-  }
-
-  if (isEmptyInputValue(control.value)) {
-    console.log('function ageRangeValidator2');
-    return null;
-  }
-
-  if (isNaN(control.value) || control.value < 18 || control.value > 45) {
-    console.log('function ageRangeValidator3');
-    return { 'ageRange': true };
-  }
-
-  console.log('function ageRangeValidator4');
-  return null;
-}
-
-export class MyValidators {
-  static ageRangeValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    console.log('age:'+control.value);
-
-    if (isEmptyInputValue(control.value)) {
-      return null;
-    }
-    if (isNaN(control.value) || control.value < 18 || control.value > 45) {
-        return { 'ageRange': true };
-    }
-
-    return null;
-  }
-
-  static integer(control: AbstractControl): { [key: string]: boolean } | null {
-    if (isEmptyInputValue(control.value)) {
-      return null;
-    }
-
-    if (isNaN(control.value)) {
-      return { 'integer':true };
-    }
-
-    return null;
   }
 }

@@ -23,27 +23,6 @@ export class HeroDetailComponent extends ValidationComponent implements OnInit, 
     super();
   }
 
-  // override ValidationComponent
-  buildErrors(): {} {
-    return {
-      'name': '',
-      'date': ''
-    }
-  }
-
-  // override ValidationComponent
-  buildMessages(): {} {
-    return {
-      'name': {
-        'required':      'Name is required.',
-        'minlength':     'Name must be at least 2 characters long.'
-      },
-      'date': {
-        'required':      'Date is required.',
-      }
-    }
-  }
-
   // implements OnInit
   ngOnInit() {
     this.setFormGroup(this.fb.group({
